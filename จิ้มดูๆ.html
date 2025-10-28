@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สุขสันต์วันทานตะวัน 🌻</title>
+<style>
+  body {margin:0;font-family:'Sarabun',sans-serif;
+        background: linear-gradient(to bottom,#ffeb99,#ffca61,#ffb347);
+        height:100vh; overflow:hidden; color:#4b2e05; position:relative;}
+  .header { font-size:2.6rem; font-weight:bold; margin:30px 0 10px; text-align:center;}
+  .subtext { font-size:1.2rem; margin-bottom:20px; text-align:center;}
+  .scoreboard { font-size:1.2rem; margin-bottom:20px; font-weight:bold; color:#3b2500;}
+  .card { background:#fff9e6; border-radius:20px; padding:25px; box-shadow:0 6px 15px rgba(0,0,0,0.1);
+         text-align:center; max-width:700px; margin:0 auto 20px;}
+  .sunflower { position:absolute; font-size:50px; user-select:none; cursor:pointer; }
+  .bounce { animation:bounce 0.5s ease-out; }
+  @keyframes bounce { 0%{transform:scale(1);}50%{transform:scale(1.5) rotate(20deg);}100%{transform:scale(1);} }
+  .confetti { position:fixed; top:-10%; font-size:24px; animation:fall linear forwards; z-index:1; pointer-events:none; }
+  @keyframes fall { 0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(1080deg);opacity:0;} }
+</style>
+</head>
+<body>
+
+<div class="header">สุขสันต์วันทานตะวัน 🌻</div>
+<div class="subtext">เปิดไฟล์แล้วดอกทานตะวันจะวิ่งทันที!</div>
+<div class="scoreboard">คะแนน: <span id="score">0</span></div>
+<div class="card">
+<p>ขอให้ปีนี้เต็มไปด้วยพลังบวก ความสุข และวันที่สดใสเหมือนทุ่งทานตะวันในยามเช้า 🌞</p>
+</div>
+
+<script>
+const sunflowerCount = 12;
+const sunflowers = [];
+let score = 0;
+
+function randomPosition() {
+  const w = window.innerWidth || 360;
+  const h = window.innerHeight || 640;
+  return { x: Math.random()*(w-50), y: Math.random()*(h-50) };
+}
+
+function createSunflowers() {
+  for(let i=0;i<sunflowerCount;i++){
+    const sf=document.createElement("div");
+    sf.classList.add("sunflower");
+    sf.textContent="🌻";
+
+    const pos=randomPosition();
+    document.body.appendChild(sf);
+
+    sunflowers.push({
+      el: sf,
+      x: pos.x,
+      y: pos.y,
+      targetX: pos.x,
+      targetY: pos.y,
+      vy: Math.random()*1+0.2
+    });
+
+    sf.style.left=pos.x+"px";
+    sf.style.top=pos.y+"px";
+
+    sf.addEventListener("click",()=>clickSunflower(sf));
+  }
+  // เริ่ม animation หลัง delay สั้น ๆ เพื่อให้มือถือ render viewport
+  setTimeout(()=>animateSunflowers(),100);
+}
+
+function clickSunflower(sf){
+  sf.classList.add("bounce");
+  createConfetti(parseInt(sf.style.left), parseInt(sf.style.top));
+  score++;
+  document.getElementById("score").textContent = score;
+  setTimeout(()=>sf.classList.remove("bounce"),500);
+}
+
+function createConfetti(x=null,y=null){
+  const colors=["🌻","🌼","🌞"];
+  for(let i=0;i<15;i++){
+    const c=document.createElement("div");
+    c.classList.add("confetti");
+    c.textContent=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=(x?x:Math.random()*window.innerWidth)+"px";
+    c.style.top=(y?y:Math.random()*-50)+"px";
+    c.style.fontSize=(Math.random()*20+20)+"px";
+    c.style.animationDuration=(Math.random()*3+2)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+  }
+}
+
+function animateSunflowers(){
+  sunflowers.forEach(sf=>{
+    if(Math.abs(sf.x-sf.targetX)<1 && Math.abs(sf.y-sf.targetY)<1){
+      const pos=randomPosition();
+      sf.targetX=pos.x;
+      sf.targetY=pos.y;
+    }
+    sf.x += (sf.targetX-sf.x)*0.02;
+    sf.y += sf.vy*2;
+    if(sf.y<0 || sf.y> (window.innerHeight-50)) sf.vy*=-1;
+    sf.el.style.left=sf.x+"px";
+    sf.el.style.top=sf.y+"px";
+  });
+  requestAnimationFrame(animateSunflowers);
+}
+
+window.onload = () => {
+  createSunflowers();
+  setInterval(createConfetti,7000);
+};
+</script>
+
+</body>
+</html>
