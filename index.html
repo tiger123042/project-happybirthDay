@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สุขสันต์วันทานตะวัน 🌻</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Sarabun', sans-serif;
+    background: linear-gradient(to bottom, #ffeb99, #ffca61, #ffb347);
+    height: 100vh;
+    overflow: hidden;
+    color: #4b2e05;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header { font-size: 2.6rem; font-weight: bold; margin: 30px 0 10px; text-align: center; }
+  .subtext { font-size: 1.2rem; margin-bottom: 20px; text-align: center; }
+  .scoreboard { font-size: 1.2rem; margin-bottom: 20px; font-weight: bold; color: #3b2500; }
+  .card {
+    background: #fff9e6; border-radius: 20px; padding: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    text-align: center; max-width: 700px; margin-bottom: 20px;
+  }
+
+  .sunflower {
+    position: absolute;
+    font-size: 60px;
+    cursor: pointer;
+    animation: pulse 3s ease-in-out infinite;
+    user-select: none;
+    transition: top 2s ease, left 2s ease;
+  }
+
+  @keyframes pulse {
+    0%,100%{transform:scale(1);text-shadow:0 0 10px rgba(255,200,0,0.4);}
+    50%{transform:scale(1.2);text-shadow:0 0 25px rgba(255,200,0,0.8);}
+  }
+
+  .bounce { animation: bounce 0.5s ease-out; }
+  @keyframes bounce { 0%{transform:scale(1);}50%{transform:scale(1.5) rotate(20deg);}100%{transform:scale(1);} }
+
+  .confetti { position: fixed; top: -10%; font-size: 24px; animation: fall linear forwards; z-index:1; pointer-events:none; }
+  @keyframes fall { 0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(1080deg);opacity:0;} }
+
+  .reset-btn { padding: 10px 20px; font-size: 1rem; font-weight: bold; background:#ffc733; border:none; border-radius:10px;
+               cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s; }
+  .reset-btn:hover { transform: scale(1.1); }
+</style>
+</head>
+<body>
+
+<div class="header">Happy Birth Day🌻</div>
+<div class="card">
+<p>มีความสุขมากๆนะ เราขอให้ทรายสุขภาพแข็งแรงนะ มีความสุขในทุกๆวัน พบเจอแต่สิ่งดีๆ ยิ้มเยอะๆนะคนเก่ง 🌻🌻🌻🌻🌻🌻🌻</p>
+<p>ดอกทานตะวันจิ้มได้นะ ลองจิ้มดู</p>
+</div>
+<div class="scoreboard">คะแนน: <span id="score">0</span></div>
+<button class="reset-btn" onclick="resetGame()">เริ่มใหม่</button>
+
+<script>
+let score = 0;
+const scoreDisplay = document.getElementById("score");
+const sunflowerCount = 8;
+const sunflowers = [];
+
+// สุ่มตำแหน่ง
+function randomPosition() {
+  return { top: Math.random()*70 + 5 + "vh", left: Math.random()*90 + 5 + "vw" };
+}
+
+// สร้างดอกทานตะวัน
+function createSunflowers() {
+  for(let i=0;i<sunflowerCount;i++){
+    const sf = document.createElement("div");
+    sf.classList.add("sunflower");
+    sf.textContent = "🌻";
+    const pos = randomPosition();
+    sf.style.top = pos.top;
+    sf.style.left = pos.left;
+    sf.addEventListener("click",()=>clickSunflower(sf));
+    document.body.appendChild(sf);
+    sunflowers.push(sf);
+    moveRandomly(sf); // เริ่มวิ่งทันทีตั้งแต่เปิด
+  }
+}
+
+// คลิกดอกทานตะวัน
+function clickSunflower(sf){
+  sf.classList.add("bounce");
+  createConfetti(sf.offsetLeft, sf.offsetTop);
+  score++;
+  scoreDisplay.textContent = score;
+  setTimeout(()=>sf.classList.remove("bounce"),500);
+}
+
+// สร้าง Confetti
+function createConfetti(x=null,y=null){
+  const confettiCount=15;
+  const colors=["🌻","🌼","🌞"];
+  for(let i=0;i<confettiCount;i++){
+    const c=document.createElement("div");
+    c.classList.add("confetti");
+    c.textContent=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=(x?x:Math.random()*100)+"px";
+    c.style.top=(y?y:Math.random()*-50)+"px";
+    c.style.fontSize=(Math.random()*20+20)+"px";
+    c.style.animationDuration=(Math.random()*3+2)+"s";
+    c.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+  }
+}
+
+// เคลื่อนที่แบบสุ่ม
+function moveRandomly(sf){
+  const pos = randomPosition();
+  sf.style.top = pos.top;
+  sf.style.left = pos.left;
+  setTimeout(()=>moveRandomly(sf), 1500); // ทำซ้ำทุก 3 วินาที
+}
+
+// รีเซ็ตเกม
+function resetGame(){
+  score=0;
+  scoreDisplay.textContent=score;
+  sunflowers.forEach(sf=>{
+    const pos=randomPosition();
+    sf.style.top=pos.top;
+    sf.style.left=pos.left;
+  });
+  createConfetti();
+}
+
+// เริ่มเกม
+createSunflowers();
+setInterval(createConfetti,7000);
+</script>
+</body>
+</html>
